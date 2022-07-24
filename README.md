@@ -15,7 +15,6 @@ Adding on config.xml to prevent conflict when many plugins try to edit same mani
 - Flexible update
 - Immidiate update
 - Stalneess days For both type of updates
-- Priority updates
 
 ## Configs
 
@@ -28,38 +27,30 @@ _Setting it to 0 will trigger update flow on the 1st attempt._
 
 ## Examples
 
-### Priority
-
-_stalness will be ignored in this case_
-
-- If priority of released app is >= 3 it will trigger _Immidiate update_
-- If priority of released app is >= 1 it will trigger _Flexibke update_
-
-_**Note:** To determine priority, Google Play uses an integer value between 0 and 5, with 0 being the default, and 5 being the highest priority. To set the priority for an update, use `inAppUpdatePriority` field under `Edits.tracks.releases` in the Google Play Developer API. Priority can only be set when rolling out a new release, and cannot be changed later._
-
-### Flexible update with out staleness days
-
 ```javascript
-window.plugins.updatePlugin.update({
-  flexibleUpdateStalenessDays: 0,
-  immediateUpdateStalenessDays: 100000,
-});
-```
-
-### Immidiate update with out staleness days
-
-```javascript
-window.plugins.updatePlugin.update({
-  flexibleUpdateStalenessDays: 100000,
-  immediateUpdateStalenessDays: 0,
-});
-```
-
-### Flexible update with 2 staleness days and Immidiate update with 5 stalness days
-
-```javascript
-window.plugins.updatePlugin.update({
-  flexibleUpdateStalenessDays: 2,
-  immediateUpdateStalenessDays: 5,
-});
+window.plugins.updatePlugin.update(
+  function (available) {
+    console.log('The new app version available', available);
+  },
+  function (e) {
+    console.error('Update plugin failed', e);
+  },
+  {
+    ANDROID: {
+      type: 'MIXED',
+      flexibleUpdateStalenessDays: 0,
+      immediateUpdateStalenessDays: 0,
+    },
+    IOS: {
+      type: 'MIXED',
+      flexibleUpdateStalenessDays: 0,
+      immediateUpdateStalenessDays: 0,
+      alertTitle: 'New Version',
+      alertMessage:
+        'version __version__ of __appName__ is available on the AppStore.',
+      alertCancelButtonTitle: 'Update',
+      alertUpdateButtonTitle: 'Not Now',
+    },
+  }
+);
 ```
